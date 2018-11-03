@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<manifest xmlns:x="http://www.callassoftware.com/cchip/1/manifest/">
+	<x:displayname>PDF report (Improved)</x:displayname>
+	<x:comment>A PDF overview report based on HTML template.</x:comment>
+	
+	<x:resources>
+
+		<!--- include dictionary -->
+		<x:dict>
+			<x:overview/>
+		</x:dict>
+		<!-- -->
+
+		<!--- include compare tree if comparison resources are used inside index.html
+		<x:compare>
+			<x:document_a resolution="20"/>
+			<x:document_b resolution="20"/>
+			<x:diffresult resolution="20"/>
+		</x:compare>
+		-->
+
+		<!--- include results tree if result resources are used inside index.html -->
+		<x:results>
+			<x:preview resolution="72" page="1"/>
+		</x:results>
+		<!-- -->
+
+	</x:resources>
+</manifest>
