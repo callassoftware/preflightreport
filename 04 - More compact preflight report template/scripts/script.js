@@ -1,419 +1,292 @@
 
+//-------------------------------------------------------------------------------------------------
+// FILLING IN PREFLIGHT INFORMATION IN THE HTML
+//-------------------------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-/*
-function printLoop() {
-	// changeSuffix("pdf");
-	printPages();
+// Given the page index for a page (0-based), sets the correct URL to inElement.
+// Example: updatePreviewImage( "#preview_image", 0 )
+// 
+// inElement: a jQuery compatible element identifier
+// inPage: the (0-based) page number for the page you're interested in
+//
+function updatePreviewImage( inElement, inPage ) {
+	$(inElement).attr("src", cals_doc_info.docs[0].pages[0].page_img);
 }
 
-function padDigits(number, digits) {
-    return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number;
+// Looks for elements with specific names and replaces their value with the information provided by
+// pdfToolbox in the cals_params file or in the XML report file. This function fills elements with
+// the following classes:
+// - params_document_name
+// - params_number_of_pages
+// - params_summary_trim_size
+// - params_profile_name
+// - params_preflighted_when_by
+// - params_summary_result
+// - params_file_size
+// - params_pdf_version
+// - params_standards
+// - params_document_title
+// - params_creator
+// - params_producer
+// - params_preflight_information
+// 
+// This function uses classes instead of ids because the same value might have to be replaced for 
+// multiple elements in the DOM
+//
+function completeFromParams() {
+
+	// Document name
+	$(".params_document_name").html( cals_doc_info.docs[0].file_name );
+
+	// Number of pages
+	$(".params_number_of_pages").html( getNumPages() );
+
+	// Trim size summary
+	$(".params_summary_trim_size").html( getTrimSizeSummary() );
+
+	// Preflight profile name
+	$(".params_profile_name").html( cals_res_info.profile_name );
+
+	// Preflighted when and by
+	$(".params_preflighted_when_by").html( cals_env_info.date.slice(0, 10) + " <span class='lighter translatable'>at</span> " +  cals_env_info.date.slice(11, 16) );
+
+	// Summary result
+	$(".params_summary_result").html( (getNumberOfErrors() == 0) ? "Success!" : "Errors!" ).addClass("translatable");
+
+	// File size
+	$(".params_file_size").html( humanFileSize( cals_doc_info.docs[0].file_size, true ) );
+
+	// PDF version
+	$(".params_pdf_version").html( cals_doc_info.docs[0].pdf_version );
+
+	// Standards
+	var theStandardsText = ($.isArray( cals_doc_info.docs[0].standards ) && (cals_doc_info.docs[0].standards.length > 0)) ? cals_doc_info.docs[0].standards.join( ", " ) : "none";
+	$(".params_standards").html( theStandardsText );
+
+	// Document title
+	$(".params_document_title").html( cals_doc_info.docs[0].docinfo.Title );
+
+	// Creator
+	$(".params_creator").html( cals_doc_info.docs[0].docinfo.Creator );
+
+	// Producer
+	$(".params_producer").html( cals_doc_info.docs[0].docinfo.Producer );
+
+	// Preflight information
+	$(".params_preflight_information").html( cals_env_info.tool_name + " " + cals_env_info.tool_variant + " " + cals_env_info.tool_version + " <span class='lighter translatable'>on</span> " + cals_env_info.os_version_text + " <span class='lighter translatable'>by</span> " + cals_env_info.user_name );
 }
 
-function getDate(){
-	var d = new Date(Date.parse(cals_env_info.date));
-	s = padDigits(d.getDate(),2) + "." + padDigits(d.getMonth()+1,2) + "." + d.getFullYear() + " " + padDigits(d.getHours(),2) + ":" + padDigits(d.getMinutes(),2);
-	return s;
-}
+// Hides either the success or the error image in the report
+//
+function updateResultImages( inElementSuccess, inElementError ) {
 
-function getHitNumString(n)
-{
-	if(n>0)
-		return n.toString();
-	else
-		return "-";
-}
-
-function addHRule( parent)
-{
-	var hr = document.createElement("div");
-	hr.className="hrule";
-	parent.appendChild(hr);
-}
-
-function addOverviewHitIcon( parent, n, src_c, src_g, label_g )
-{
-	var src;
-	var label;
-	if( n > 0 )
-	{
-		src = src_c;
-		label = n.toString();
+	if (getNumberOfErrors()==0) {
+		$(inElementError).hide();
+	} else {
+		$(inElementSuccess).hide();
 	}
-	else
-	{
-		src = src_g;
-		label = label_g;
-	}
-	if( src.length > 0 )
-	{
-		var div =  document.createElement("div");
-		div.className="ov_hit_box";
+}
 
-		var img =  document.createElement("img");
-		img.className="ov_hit_icon";
-		img.src=src;
-		div.appendChild(img);
+// Inserts all hits and fixups in the result section of the report
+//
+function insertHitsAndFixups( inContainer ) {
 
-		if( label.length > 0 )
-		{
-			var divText =  document.createElement("div");
-			divText.className="ov_hit_text";
-			divText.innerHTML = label;
-			div.appendChild(divText);
+	// Get the information we need to insert
+	var theHits = getHits();
+	var theFixups = getFixups();
+
+	// If there is content, create it
+	if ((theHits.length > 0) || (theFixups.length > 0)) {
+
+		// Insert all errors, then warnings, then informational items
+		for (var theErrorIndex = 0; theErrorIndex < theHits.length; theErrorIndex++) {
+			var theError = theHits[theErrorIndex];
+			if (theError.severity == "error") {
+				insertHit( inContainer, "img/hit_error.pdf", theError.rule_name, theError.matches, theError.on_pages );
+			}
+		}
+		for (var theWarningIndex = 0; theWarningIndex < theHits.length; theWarningIndex++) {
+			var theWarning = theHits[theWarningIndex];
+			if (theWarning.severity == "warning") {
+				insertHit( inContainer, "img/hit_warning.pdf", theWarning.rule_name, theWarning.matches, theWarning.on_pages );
+			}
+		}
+		for (var theInfoIndex = 0; theInfoIndex < theHits.length; theInfoIndex++) {
+			var theInfo = theHits[theInfoIndex];
+			if (theInfo.severity == "info") {
+				insertHit( inContainer, "img/hit_info.pdf", theInfo.rule_name, theInfo.matches, theInfo.on_pages );
+			}
 		}
 
-		parent.appendChild(div);
-	}
-}
-
-function addOverviewHitIcons( parent )
-{
-	var err = parseInt( cals_res_info.errors );
-	var wrn = parseInt( cals_res_info.warnings );
-	var inf = parseInt( cals_res_info.infos );
-	var sum = err + wrn + inf;
-	
-	addOverviewHitIcon( parent, err, "img/error.pdf"  , "img/error_g.pdf"  , "-" );
-	addOverviewHitIcon( parent, wrn, "img/warning.pdf", "img/warning_g.pdf", "-" );
-	addOverviewHitIcon( parent, inf, "img/info.pdf"   , "img/info_g.pdf"   , "-" );
-	addOverviewHitIcon( parent, sum, ""               , "img/ok.pdf"       , "" );
-}
-
-function writeHits( parent, step, id, severity, label, icon ){
-
-	var kMaxRules = 9999;
-
-	var hits = new Array();
-	var matches = 0;
-	
-	for (var i=0;i<cals_res_info.steps[step].hits.length;i++)
-	{ 
-		var hit = cals_res_info.steps[step].hits[i];
-		if( hit.matches > 0 && hit.severity == severity)
-		{
-			hits.push(hit);
-			matches = matches + parseInt(hit.matches);
+		// Insert all fixups
+		for (var theFixupIndex = 0; theFixupIndex < theFixups.length; theFixupIndex++) {
+			var theFixup = theFixups[theFixupIndex];
+			insertFixup( inContainer, "img/hit_fixup.pdf", theFixup.fixup_name, theFixup.succeeded, theFixup.failed );
 		}
+ 
+	} else {
+
+		// Nothing to do, hide this section
+		$( inContainer ).hide();
+	}
+}
+
+// Inserts a single hit item in the result section of the report
+//
+function insertHit( inContainer, inImageURL, inName, inNumberOfTimes, inPageList ) {
+
+	// Insert a container for the hit
+	var theHitContainer = $( '<div/>', {
+		class: 'section_hits_hit'
+	}).appendTo( $(inContainer) );
+
+	// Insert an image and a paragraph
+	var theHitImage = $( '<img/>', {
+		src: inImageURL
+	}).appendTo( theHitContainer );
+
+	// Insert an image and a paragraph
+	var theHitText = $( '<p/>').appendTo( theHitContainer );
+
+	// Format the occurrence string as we want
+	var theOccurrence = addTimes( inNumberOfTimes );
+	if ((inPageList != undefined) && (inPageList.length > 0)) {
+		theOccurrence += " " + formatPageList( inPageList );
 	}
 
-	if( hits.length > 0 )
-	{
-		var div = document.createElement("div");
-		div.id=id;
+	// Calculate the text we want for this item and insert it
+	theHitText.html( inName + "<span class='lighter smaller'>" + " (" + theOccurrence + ")" + "</span>");
+}
 
-		var img = document.createElement("img");
-		img.src = icon;
-		div.appendChild(img);
+// Formats a page list for human consumption
+//
+function formatPageList( inPageList ) {
 
-		var span_label =  document.createElement("span");
-		span_label.className="severity_label dict";
-		span_label.setAttribute("cals_dict",label);
-		span_label.appendChild(document.createTextNode( label));
-		div.appendChild(span_label);
+	// Add one to all pages or they'll be wrong (0-based)
+	for (var theIndex = 0; theIndex < inPageList.length; theIndex++) {
+		inPageList[theIndex]++;
+	}
+
+	// Our page list must at least have one page or we wouldn't get here... let's format easy cases
+	// in a special way...
+	if (inPageList.length == 1) {
+		return "<span class='translatable'>on</span> <span class='translatable'>page</span> " + inPageList[0];
+	} else if (inPageList.length < 6) {
+		return "<span class='translatable'>on</span> <span class='translatable'>pages</span> " + inPageList.join( ", " );
+	} else {
+		var theShortList = inPageList.slice( 0, 5);
+		var theRemaining = inPageList.length - 5;
+		return "<span class='translatable'>on</span> <span class='translatable'>pages</span> " + 
+		       theShortList.join( ", " ) + " <span class='translatable'>and</span> " + theRemaining + " <span class='translatable'>more</span>";
+	}
+}
+
+// Inserts a single fixup item in the result section of the report
+//
+function insertFixup( inContainer, inImageURL, inName, inSucceeded, inFailed ) {
+
+	// Insert a container for the fixup
+	var theFixupContainer = $( '<div/>', {
+		class: 'section_hits_fixup'
+	}).appendTo( $(inContainer) );
 	
-//		var parent = document.getElementById("details_hits");
-		parent.appendChild(div);
-		
-		var ul =  document.createElement("ul");
-		
-		var remaining = matches;
+	// Insert an image and a paragraph
+	var theFixupImage = $( '<img/>', {
+		src: inImageURL
+	}).appendTo( theFixupContainer );
 
-		for (var i=0; i < hits.length && i < kMaxRules;i++)
-		{
-			var hit = hits[i];
+	// Insert an image and a paragraph
+	var theFixupText = $( '<p/>').appendTo( theFixupContainer );
 
-			remaining = remaining - hit.matches;
-			//- White text smaller than 10 pt (25 matches on 1 page)
-			var s = new String("");
-			s = s.concat( "(" );
-			s = s.concat( hit.matches );
-			s = s.concat( " matches" );
-			if( hit.pages > 0 )
-			{
-				s = s.concat( " on " );
-				s = s.concat( hit.pages );
-				if( hit.pages == 1 )
-				{
-					s = s.concat( " page" );
+	// Calculate the text we want for this item and insert it
+	var theOccurrence = "";
+	var theSucceededString = addTimes( inSucceeded );
+	var theFailedString = "<span class='translatable'>failed</span> " + addTimes( inFailed );
+	if (inSucceeded == 0) {
+		theOccurrence = theFailedString;
+	} else {
+		theOccurrence = (inFailed == 0) ? theSucceededString : theSucceededString + ", " + theFailedString;
+	}
+	var theDescription = inName + "<span class='lighter smaller'>" + " (" + theOccurrence + ")</span>";
+	theFixupText.html( theDescription );
+}
+
+// Adds "time" or "times" to a string depending on the number
+//
+function addTimes( inNumber ) {
+
+	if (inNumber == 1) {
+		return inNumber + " <span class='translatable'>time</span>";
+	} else {
+		return inNumber + " <span class='translatable'>times</span>";
+	}
+}
+
+// Inserts information about colors
+//
+function insertColorInformation( inContainer ) {
+
+	// Get the color information for the whole document
+	var theColorInformation = xmlGetInkCoverageStatistics( 0 );
+
+	// Loop over the colors and divide it in process colors and spot colors
+	var theProcessColors = [];
+	var theSpotColors = [];
+	for (var theIndex = 0; theIndex < theColorInformation.length; theIndex++) {
+
+		// Only handle those that are used
+		var theColor = theColorInformation[theIndex];
+		if (theColor.percentage > 0) {
+
+			switch( theColor.name ) {
+
+				case "Cyan":
+				case "Magenta":
+				case "Yellow":
+				case "Black": {
+					theProcessColors.push( theColor );
+					break;
 				}
-				else
-				{
-					s = s.concat( " pages" );
+				default: {
+					theSpotColors.push( theColor );
+					break;
 				}
 			}
-			s = s.concat( ")" );
-		
-	//		alert(s);
-
-			var span_rule_name =  document.createElement("span");
-			span_rule_name.className="rule_name";
-			span_rule_name.appendChild(document.createTextNode( hit.rule_name));
-
-			var span_rule_matches =  document.createElement("span");
-			span_rule_matches.className="rule_matches";
-			span_rule_matches.appendChild(document.createTextNode( s));
-
-			var li =  document.createElement("li");
-			ul.appendChild(li);
-
-			li.appendChild(span_rule_name);
-			li.appendChild(span_rule_matches);
-		}
-		if( remaining > 0 )
-		{
-			//+ 61.559 other items
-			var s = new String("+ ");
-			s = s.concat( remaining );
-			if( remaining == 1 )
-			{
-				s = s.concat(" other item");
-			}
-			else
-			{
-				s = s.concat(" other items");
-			}
-
-			var span_other_items =  document.createElement("span");
-			span_other_items.className="other_items";
-			span_other_items.appendChild(document.createTextNode( s));
-			
-			var li2 =  document.createElement("li");
-			li2.appendChild(span_other_items);
-			ul.appendChild(li2);
-		}
-		
-		parent.appendChild(ul);
-	}
-	return matches;
-}
-
-function writeFixups( parent, step, label, icon  )
-{
-	var fixups = new Array();
-	var succeeded = 0;
-	var failed = 0;
-	
-	for (var i=0;i<cals_res_info.steps[step].fixups.length;i++)
-	{ 
-		var fixup = cals_res_info.steps[step].fixups[i];
-		succeeded += parseInt(fixup.succeeded);
-		failed += parseInt(fixup.failed);
-
-		if( succeeded > 0 || failed > 0)
-		{
-			fixups.push(fixup);
 		}
 	}
 
-	if( fixups.length > 0 )
-	{
-		var img = document.createElement("img");
-		img.src = icon;
-		parent.appendChild(img);
-
-		var span_label =  document.createElement("span");
-		span_label.className="fixup_label dict";
-		span_label.setAttribute("cals_dict",label);
-		span_label.appendChild(document.createTextNode( label));
-		parent.appendChild(span_label);
-
-		var ul =  document.createElement("ul");
-		for (var i=0;i<fixups.length;i++)
-		{
-			var fixup = fixups[i];
-			var li =  document.createElement("li");
-
-			//(16 objects)
-			var s = new String("(");
-			s = s.concat( fixup.succeeded );
-			s = s.concat( " objects)" );
-
-			var span_fixup_name =  document.createElement("span");
-			span_fixup_name.className="fixup_name";
-			span_fixup_name.appendChild(document.createTextNode( fixup.fixup_name));
-
-			var span_fixup_objects =  document.createElement("span");
-			span_fixup_objects.className="fixup_objects";
-			span_fixup_objects.appendChild(document.createTextNode( s));
-
-			li.appendChild(span_fixup_name);
-			li.appendChild(span_fixup_objects);
-
-			ul.appendChild(li);
-		}
-		parent.appendChild(ul);
-	}
-	return fixups.length;
-}
-
-function getPlateNames()
-{
-	var s = new String;
-	for (var i=0;i<cals_doc_info.docs[0].plates.length;i++)
-	{
-		if( i>0)
-		{
-			s+=", ";
-		}
-		s += cals_doc_info.docs[0].plates[i] ;
-	}
-	return s;
-}
-
-function getStandards()
-{
-	var s = new String;
-	for (var i=0;i<cals_doc_info.docs[0].standards.length;i++)
-	{
-		if( i>0)
-		{
-			s+=", ";
-		}
-		s += cals_doc_info.docs[0].standards[i] ;
-	}
-	return s;
-}
-
-function writeStepDetails( parent, step )
-{
-	var divHits = document.createElement("div");
-	divHits.className="details_hits";
-	divHits.id="details_hits_"+step;
-
-	if( cals_res_info.steps[step].type == "action" )
-	{
-		//TODO
+	// Add process information
+	for (var theProcessColorIndex = 0; theProcessColorIndex < theProcessColors.length; theProcessColorIndex++) {
+		var theColor = theProcessColors[theProcessColorIndex];
+		insertColorLine( inContainer, "Process color", theColor.name, theColor.percentage, theColor.squareCm );
 	}
 
-	if( cals_res_info.steps[step].type == "profile" || cals_res_info.steps[step].type == "rule" )
-	{
-		var nHits = 0;
-		nHits += writeHits( divHits, step, "details_hits_error"  , "error"  , "Errors"  , "img/error.pdf" )
-		nHits += writeHits( divHits, step, "details_hits_warning", "warning", "Warnings", "img/warning.pdf" )
-		nHits += writeHits( divHits, step, "details_hits_info"   , "info"   , "Infos"   , "img/info.pdf" )
-
-		if( nHits > 0 )
-		{
-			parent.appendChild(divHits);
-		}
-	}
-
-	if( cals_res_info.steps[step].type == "profile" || cals_res_info.steps[step].type == "fixup" )
-	{
-		var divFixups = document.createElement("div");
-		divFixups.className="details_fixups";
-		divFixups.id="details_fixup_"+step;
-
-		var nFixups = writeFixups( divFixups, step, "Fixups" ,"img/fixup.pdf" );
-		if( nFixups > 0 )
-		{
-			parent.appendChild(divFixups);
-		}
-	}
-
-}
-
-function writeStep( parent, step )
-{
-	var div = document.createElement("div");
-	div.className="processstep";
-	div.id="step_"+step;
-
-	var divHeader = document.createElement("div");
-	divHeader.className="step_header";
-	divHeader.id="step_"+step;
-
-	var p = document.createElement("p");
-	p.innerHTML=cals_res_info.steps[step].name;
-	divHeader.appendChild(p);
-
-	div.appendChild(divHeader);
-	parent.appendChild(div);
-
-	writeStepDetails(div,step);
-}
-
-function writeDetails()
-{
-	var parent = document.getElementById("details");
-	for (var i=0;i<cals_res_info.steps.length;i++)
-	{
-		writeStep(parent,i);
+	// Add spot color information
+	for (var theSpotColorIndex = 0; theSpotColorIndex < theSpotColors.length; theSpotColorIndex++) {
+		var theColor = theSpotColors[theSpotColorIndex];
+		insertColorLine( inContainer, "Spot color", theColor.name, theColor.percentage, theColor.squareCm );
 	}
 }
 
-function changeSuffix(new_suffix)
-{
-	var image = document.getElementsByTagName("img");
+// Inserts one line with color information
+//
+function insertColorLine( inContainer, inKey, inName, inPercentage, inSurface ) {
 
-	for (var i=0, im=image.length; im>i; i++)
-	{
-		var id_check = image[i].getAttribute("id");
+	// Insert a container for the color
+	var theColorContainer = $( '<div/>', {
+		class: 'section_color_key_value'
+	}).appendTo( $(inContainer) );
 
-		if (id_check != "overview_img")
-		{
-			var src_prefix = image[i].getAttribute("src").slice(0, -3);
-			image[i].setAttribute("src",src_prefix+new_suffix);
-		}
-	}
+	// Insert two text lines for the color
+	var theKeyText = $( '<p/>', {
+		class: 'section_color_key translatable'
+	}).appendTo( theColorContainer );
+	var theValueText = $( '<p/>', {
+		class: 'section_color_value'
+	}).appendTo( theColorContainer );
+
+	// Set the correct text for them	
+	theKeyText.html( inKey );
+	theValueText.html( inName + "<span class='lighter smaller'>" + " (" + inPercentage.toFixed(2) + "%, " + inSurface.toFixed(2) + "sqcm" +  ")</span>" );
 }
 
-function translate()
-{
-	var e = document.getElementsByClassName("dict");
-
-	for (var i=0, l=e.length; i<l; i++)
-	{
-		var key = "cals_dict." + e[i].getAttribute("cals_dict");
-		var val = eval(key);
-		if(val===undefined)
-			e[i].innerHTML = "##"+e[i].innerHTML + "{" + key + "}";
-		else
-			e[i].innerHTML = val;
-	}
-}
-
-function setFileSize()
-{
-	var key = document.getElementById("fileSizeKey");
-	var val = document.getElementById("fileSizeValue");
-
-	if( cals_doc_info.docs[0].file_size > 1073741824 ) {
-		key.innerHTML="File size (GB)";
-		key.setAttribute("cals_dict","FileSizeGB");
-		val.innerHTML=(cals_doc_info.docs[0].file_size/1073741824).toFixed(2);
-	}else if( cals_doc_info.docs[0].file_size > 1048576 ){
-		key.innerHTML="File size (MB)";
-		key.setAttribute("cals_dict","FileSizeMB");
-		val.innerHTML=(cals_doc_info.docs[0].file_size/1048576).toFixed(2);	
-	}else if( cals_doc_info.docs[0].file_size > 1024 ){
-		key.innerHTML="File size (KB)";
-		key.setAttribute("cals_dict","FileSizeKB");
-		val.innerHTML=(cals_doc_info.docs[0].file_size/1024).toFixed(2);	
-	}else{
-		key.innerHTML="File size (Byte)";
-		key.setAttribute("cals_dict","FileSizeByte");
-		val.innerHTML=(cals_doc_info.docs[0].file_size).toFixed(2);	
-	}
-}
-
-function init()
-{
-	translate();
-
-	var media = window.getComputedStyle(document.body,":after").getPropertyValue("content");
-
-	if (media.indexOf("screen") != -1) {
-    	changeSuffix("png");
-	}
-}
-*/
