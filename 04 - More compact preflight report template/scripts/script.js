@@ -102,19 +102,19 @@ function insertHitsAndFixups( inContainer ) {
 		for (var theErrorIndex = 0; theErrorIndex < theHits.length; theErrorIndex++) {
 			var theError = theHits[theErrorIndex];
 			if (theError.severity == "error") {
-				insertHit( inContainer, "img/hit_error.pdf", theError.rule_name, theError.matches, theError.on_pages );
+				insertHit( inContainer, "img/hit_error.pdf", theError.rule_name, theError.matches, theError.on_pages, "error" );
 			}
 		}
 		for (var theWarningIndex = 0; theWarningIndex < theHits.length; theWarningIndex++) {
 			var theWarning = theHits[theWarningIndex];
 			if (theWarning.severity == "warning") {
-				insertHit( inContainer, "img/hit_warning.pdf", theWarning.rule_name, theWarning.matches, theWarning.on_pages );
+				insertHit( inContainer, "img/hit_warning.pdf", theWarning.rule_name, theWarning.matches, theWarning.on_pages, "warning" );
 			}
 		}
 		for (var theInfoIndex = 0; theInfoIndex < theHits.length; theInfoIndex++) {
 			var theInfo = theHits[theInfoIndex];
 			if (theInfo.severity == "info") {
-				insertHit( inContainer, "img/hit_info.pdf", theInfo.rule_name, theInfo.matches, theInfo.on_pages );
+				insertHit( inContainer, "img/hit_info.pdf", theInfo.rule_name, theInfo.matches, theInfo.on_pages, "info" );
 			}
 		}
 
@@ -133,11 +133,11 @@ function insertHitsAndFixups( inContainer ) {
 
 // Inserts a single hit item in the result section of the report
 //
-function insertHit( inContainer, inImageURL, inName, inNumberOfTimes, inPageList ) {
+function insertHit( inContainer, inImageURL, inName, inNumberOfTimes, inPageList, inType ) {
 
 	// Insert a container for the hit
 	var theHitContainer = $( '<div/>', {
-		class: 'section_hits_hit'
+		class: 'section_hits_hit ' + inType
 	}).appendTo( $(inContainer) );
 
 	// Insert an image and a paragraph
@@ -289,4 +289,66 @@ function insertColorLine( inContainer, inKey, inName, inPercentage, inSurface ) 
 	theKeyText.html( inKey );
 	theValueText.html( inName + "<span class='lighter smaller'>" + " (" + inPercentage.toFixed(2) + "%, " + inSurface.toFixed(2) + "sqcm" +  ")</span>" );
 }
+
+
+
+//-------------------------------------------------------------------------------------------------
+// PREFERENCES SUPPORT
+//-------------------------------------------------------------------------------------------------
+
+
+// Called when all resources for the page are ready and loaded
+//
+$( window ).on( "load", function() {
+
+	// Visibility control
+	$( ".section_hits_fixup" ).toggle( sShowFixups );
+	$( ".section_hits_hit.info" ).toggle( sShowInfos );
+	$( ".section_hits_hit.warning" ).toggle( sShowWarnings );
+	$( ".section_hits_hit.error" ).toggle( sShowErrors );
+	$( "#section_more_information" ).toggle( sShowMoreInformation );
+	$( "#section_colors" ).toggle( sShowColorInformation );
+
+
+	// Colors
+	if (getNumberOfErrors() == 0) {
+		$( "#section_summary" ).css( "background-color", sColorSummaryBackground_success );
+	} else {
+		$( "#section_summary" ).css( "background-color", sColorSummaryBackground_error );
+	}
+
+	
+
+	/*
+	//$( "#" + inId ).toggle( inVisible );
+
+	/*
+	// Ajust visibility of elements
+	reportSetVisibilityForElementWithId( "infobox", sShowInfoBox );
+	reportSetVisibilityForElementWithId( "details", sShowDetails );
+	reportSetVisibilityForElementWithId( "details_hits", sShowDetailsHits );
+	reportSetVisibilityForElementWithId( "details_docinfo", sShowDetailsDocumentInfo );
+	reportSetVisibilityForElementWithId( "details_environment", sShowDetailsEnvironment );
+
+	// Visibility settings for errors, warnings, infos and fixes are controlled in the actual
+	// Javascript code that adds these items to the report
+
+	// Change colors as necessary
+	$( "span.red" ).css( "color", sColorAccent );
+	$( "div.hrule" ).css( "background-color", sColorAccent );
+	$( "#tool_name" ).css( "color", sColorAccent );
+	$( "#tool_variant" ).css( "color", sColorSecondaryAccent );
+	$( "span.severity_label" ).css( "color", sColorSecondaryAccent );
+	$( "span.fixup_label" ).css( "color", sColorAccent );
+	$( "span.docinfo_label" ).css( "color", sColorAccent );
+	$( "span.environment_label" ).css( "color", sColorAccent );
+	$( "div.ov_hit_box" ).css( "border-color", sColorAccent );
+	$( "#infobox" ).css( "border-color", sColorAccent );
+	$( "#header" ).css( "border-color", sColorAccent );
+	$( "#overview_preview" ).css( "background-color", sColorThumbnailBackground );
+	$( ".step_header" ).css( "border-color", sColorAccent );
+*/
+});
+
+
 
