@@ -5,7 +5,7 @@
 	
 	<x:settings>
 		<!--- if 'true' temporary files are moved next to the resulting PDF file (useful for developing templates) -->
-		<x:keeptemp>false</x:keeptemp>
+		<x:keeptemp>true</x:keeptemp>
 	</x:settings>
 
 	<x:resources>

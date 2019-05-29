@@ -12,6 +12,22 @@ function updatePreviewImage(inElement, inPage) {
     $(inElement).attr("src", cals_doc_info.docs[0].pages[0].page_img);
 }
 
+function shortSysName(name) {
+    var arr = name.split(" ");
+    var out;
+    if (arr[0] === "Microsoft") {
+        if (arr[2] === "Server") {
+            out = arr[1] + arr[2] + arr[3];
+        } else {
+            out = arr[1] + arr[2];
+        }
+    } else {
+        out = name;
+    }
+
+    return out;
+}
+
 // Looks for elements with specific names and replaces their value with the information provided by
 // pdfToolbox in the cals_params file or in the XML report file. This function fills elements with
 // the following classes:
@@ -72,7 +88,8 @@ function completeFromParams() {
     $(".params_producer").html(cals_doc_info.docs[0].docinfo.Producer);
 
     // Preflight information
-    $(".params_preflight_information").html(cals_env_info.tool_name + " " + cals_env_info.tool_variant + " " + cals_env_info.tool_version + " <span class='lighter translatable'>on</span> " + cals_env_info.os_version_text + " <span class='lighter translatable'>by</span> " + cals_env_info.user_name);
+    var sysName = shortSysName(cals_env_info.os_version_text);
+    $(".params_preflight_information").html(cals_env_info.tool_name + " " + cals_env_info.tool_variant + " " + cals_env_info.tool_version + " <span class='lighter translatable'>on</span> " + sysName + " <span class='lighter translatable'>by</span> " + cals_env_info.user_name);
 }
 
 // Hides either the success or the error image in the report
@@ -346,6 +363,9 @@ $(window).on("load", function () {
     $("#section_missing_fonts").toggle(sShowMissingFonts);
     $("#oi").toggle(sShowOutputIntent);
 
+    if (document.getElementById("xmlFonts").innerHTML == "") {
+        $('.section_missing_fonts').toggle(false);
+    }
 
     // Colors
     if (getNumberOfErrors() == 0) {
