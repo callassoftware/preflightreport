@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+	<title>Preflight Report</title>
+
+
+	<!-- Style sheets -->
+	<link rel="stylesheet" href="callas_library/styles/clean-up.css"  type="text/css"/>
+	<link rel="stylesheet" href="callas_library/styles/fonts.css"  type="text/css"/>
+	<link rel="stylesheet" href="callas_library/styles/mixin.css"  type="text/css"/>
+	<link rel="stylesheet" href="styles/styles.css"  type="text/css"/>
+
+	<!-- Javascripts -->
+	<script type="text/javascript" src="scripts/cals_params.js"></script>
+	<script type="text/javascript" src="callas_library/scripts/jquery-min.js"></script>
+	<script type="text/javascript" src="callas_library/scripts/cals-units.js"></script>
+	<script type="text/javascript" src="callas_library/scripts/cals-preflight-report.js"></script>
+	<script type="text/javascript" src="callas_library/scripts/cals-xml-report.js"></script>
+	<script type="text/javascript" src="scripts/preferences.js"></script>
+	<script type="text/javascript" src="scripts/script.js"></script>
+
+</head>
+
+<body>
+
+	<!-- Header with background image, title and logo -->
+	<div id="header">
+		<div id="header_title">
+			<p class="translatable">Preflight report</p>
+		</div>
+		<div id="header_logo">
+			<img src="img/logo.pdf">
+		</div>
+	</div>
+
+	<!-- Summary with preview image and summary of preflight results -->
+	<div id="section_summary">
+		<div id="section_summary_preview">
+			<img id="section_summary_preview_image">
+			<script>updatePreviewImage( "#section_summary_preview_image", 0 );</script>
+		</div>
+
+		<div id="section_summary_text">
+			<div class="section_summary_key_value">
+				<p class="section_summary_key translatable">Document name</p>
+				<p class="section_summary_value params_document_name"></p>
+			</div>
+			<div class="section_summary_key_value">
+					<p class="section_summary_key translatable">Number of pages</p>
+					<p class="section_summary_value params_number_of_pages"></p>
+			</div>
+			<div class="section_summary_key_value">
+					<p class="section_summary_key translatable">Trim size</p>
+					<p class="section_summary_value params_summary_trim_size"></p>
+			</div>
+			<div class="section_summary_key_value">
+					<p class="section_summary_key translatable">Profile name</p>
+					<p class="section_summary_value params_profile_name"></p>
+			</div>
+			<div class="section_summary_key_value">
+					<p class="section_summary_key translatable">Preflighted</p>
+					<p class="section_summary_value params_preflighted_when_by"></p>
+			</div>
+			<div class="section_summary_key_value">
+					<p class="section_summary_key translatable">Result</p>
+					<p class="section_summary_value params_summary_result"></p>
+			</div>		
+		</div>
+
+		<div id="section_summary_icons">
+			<img id="section_summary_icons_success" src="img/result_success.pdf">
+			<img id="section_summary_icons_error" src="img/result_error.pdf">
+			<script>updateResultImages( "#section_summary_icons_success", "#section_summary_icons_error" );</script>
+		</div>
+	</div>
+
+	<!-- Section with all hit information -->
+	<div id="section_hits">
+		<script>insertHitsAndFixups("#section_hits");</script>
+		<div id="nohits" class="nohits">
+			<img id="nohits_success_icon" src="img/result_success.pdf">
+		</div>
+		<script>createNomatchItems();</script>
+	</div>
+
+	<!-- Section with page dimensions -->
+	<div id="section_pagedimensions" class="section_with_title">
+		<p class="title">Page dimensions</p>
+
+		<div class="section_more_information_key_value">
+			<p class="section_more_information_key">CropBox</p>
+			<div class="section_more_information_value xml_cropbox"></div>
+			<br>
+		</div>
+
+		<div class="section_more_information_key_value">
+		<p class="section_more_information_key">TrimBox</p>
+			<div class="section_more_information_value xml_trimbox"></div>
+			<br>
+		</div>
+		<script>insertPageDimensions()</script>
+	</div>
+
+	<!-- Section with missing fonts -->
+	<div id="section_missing_fonts" class="section_with_title">
+		<p class="title">Missing fonts</p>
+
+		<div class="section_more_information_key_value">
+			<p class="section_more_information_key">Missing fonts</p>
+			<div class="section_more_information_value">
+				<ul id="xmlFonts"></ul>
+				<br>
+			</div>
+		</div>
+	</div>
+	<br>
+	<br>
+
+	<!-- Section with additional document information -->
+	<div id="section_more_information" class="section_with_title">
+		<p class="title translatable">More information</p>
+
+		<div class="section_more_information_key_value">
+			<p class="section_more_information_key translatable">File size</p>
+			<p class="section_more_information_value params_file_size"></p>
+		</div>
+
+		<div class="section_more_information_key_value">
+				<p class="section_more_information_key translatable">PDF version</p>
+				<p class="section_more_information_value params_pdf_version"></p>
+		</div>
+
+		<div class="section_more_information_key_value">
+				<p class="section_more_information_key translatable">Standards</p>
+				<p class="section_more_information_value params_standards"></p>
+		</div>
+
+		<div class="section_more_information_key_value">
+				<p class="section_more_information_key translatable">Document title</p>
+				<p class="section_more_information_value params_document_title"></p>
+		</div>
+
+		<div class="section_more_information_key_value">
+				<p class="section_more_information_key translatable">Creator</p>
+				<p class="section_more_information_value params_creator"></p>
+		</div>
+
+		<div class="section_more_information_key_value">
+				<p class="section_more_information_key translatable">Producer</p>
+				<p class="section_more_information_value params_producer"></p>
+		</div>
+	
+		<div class="section_more_information_key_value">
+			<p class="section_more_information_key translatable">Preflight information</p>
+			<p class="section_more_information_value params_preflight_information"></p>
+		</div>
+
+		<div class="section_more_information_key_value oi">
+			<p class="section_more_information_key translatable">Output intent name</p>
+			<p class="section_more_information_value" id="oi_name"></p>
+		</div>
+	
+
+	</div>
+
+	<!-- Section with document colors -->
+	<div id="section_colors" class="section_with_title">
+		<p class="title translatable">Color information</p>
+		<script>insertColorInformation("#section_colors");</script>			
+	</div>
+
+	<!-- Update information throughout the DOM -->
+	<script>completeFromParams();</script>
+
+	<!-- Translate information throughout the DOM -->
+	<script>translate();</script>
+
+	<!-- Insert XML information -->
+	<script>xmlAddResults()</script>
+
+</body>
+</html>
+
+
+
