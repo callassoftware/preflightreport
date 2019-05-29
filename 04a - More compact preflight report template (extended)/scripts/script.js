@@ -332,7 +332,7 @@ function insertPageDimensions() {
             console.log('null/trimbox');
         } else {
             const content = i + ": " + unitConvertFromPoints(xmlGetTrimBoxWidthForPage(i), sUnitPageDimensions).toFixed(2) + sUnitPageDimensionsString + " x " + unitConvertFromPoints(xmlGetTrimBoxHeightForPage(i), sUnitPageDimensions).toFixed(2) + sUnitPageDimensionsString;
-            cropBox.push(content);
+            trimBox.push(content);
         }
         i++;
     });

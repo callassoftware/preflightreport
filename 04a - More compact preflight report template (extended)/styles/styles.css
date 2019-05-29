@@ -155,14 +155,12 @@ li {
 }
 
 li {
-	overflow: unset;
 	font-size: 10pt;
 	font-weight: 400;
 	max-width: 190mm;
 }
 
 ul {
-	overflow: unset;
 	list-style: none;
 	float: left;
 	padding-left: 5mm;
