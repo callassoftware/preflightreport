@@ -17,9 +17,9 @@ function shortSysName(name) {
     var out;
     if (arr[0] === "Microsoft") {
         if (arr[2] === "Server") {
-            out = arr[1] + arr[2] + arr[3];
+            out = arr[1] + " " + arr[2] + " " + arr[3];
         } else {
-            out = arr[1] + arr[2];
+            out = arr[1] + " " + arr[2];
         }
     } else {
         out = name;
