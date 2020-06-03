@@ -1,0 +1,282 @@
+@font-face {
+	font-family: 'SourceSansPro';
+	src: url('../fonts/SourceSansPro-Bold.ttf');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'SourceSansPro';
+	src: url('../fonts/SourceSansPro-Regular.ttf');
+	text-weight: normal;
+	font-style: normal;
+}
+
+@page {
+	size: A4 portrait;
+}
+
+p {
+	font-family: 'SourceSansPro';
+	font-size: 12pt;
+}
+
+li {
+	font-family: 'SourceSansPro';
+	font-size: 12pt;
+}
+
+.lighter {
+	font-weight: 100;
+}
+
+.smaller {
+	font-size: 8pt;
+}
+
+.clear-fix {
+	clear: both;
+}
+
+.page {
+	page-break-after: always;
+}
+
+.header {
+	display: table;
+	width: 100%;
+	height: 30mm;
+	background-image: linear-gradient(rgb(194, 22, 61), rgb(136, 29, 64));
+}
+
+.header_title {
+	display: table-cell;
+	vertical-align: middle;
+	padding-left: 20mm;
+}
+
+.header_title p {
+	font-size: 30pt;
+	font-weight: bold;
+	color: white;
+}
+
+.header_logo {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.header_logo img {
+	width: 35mm;
+}
+
+#section_summary {
+	padding-top: 10mm;
+	padding-left: 15mm;
+	overflow: hidden;
+}
+
+.params_document_name {
+	font-size: 16pt;
+	color: rgb(136, 29, 64);
+	padding-bottom: 2mm;
+}
+
+.section_summary_key {
+	display: inline-block;
+}
+
+.section_summary_value {
+	display: inline-block;
+	font-weight: bold;
+}
+
+#section_summary_icons_success, #section_summary_icons_error {
+	width: 18mm;
+}
+
+.section_hits_hit,
+.section_hits_fixup {
+	padding-left: 10mm;
+	clear: both;
+	height: 7mm;
+}
+
+.section_hits_hit img,
+.section_hits_fixup img {
+	width: 5mm;
+	float: left;
+}
+
+.section_hits_hit p,
+.section_hits_fixup p {
+	float: left;
+	padding-left: 2mm;
+	font-size: 10pt;
+	max-width: 190mm;
+	font-family: 'SourceSansPro';
+	font-size: 12pt;
+}
+
+.nohits img {
+	width: 5mm;
+	float: left;
+}
+
+.nohits li {
+	overflow: unset;
+	font-size: 10pt;
+	max-width: 190mm;
+}
+
+.nohits ul {
+	overflow: unset;
+	list-style: none;
+	float: left;
+	padding-left: 5mm;
+	font-size: 10pt;
+	max-width: 190mm;
+}
+
+li {
+	font-size: 10pt;
+	font-weight: 400;
+	max-width: 190mm;
+}
+
+ul {
+	list-style: none;
+	float: left;
+	padding-left: 5mm;
+	font-size: 10pt;
+	max-width: 190mm;
+}
+
+.section_with_title {
+	padding-top: 10mm;
+}
+
+.section_with_title p.title {
+	width: 96%; 
+	font-size: 18pt;
+	font-weight: bold;
+	border-bottom: 1.5px solid rgb(136, 29, 64); 
+	line-height: 0.1em;
+	margin: 10px 2% 10mm 2%; 
+	
+} 
+
+.section_with_title p.title span { 
+	padding: 0px 10px;
+	position: relative;
+	left: 10mm;
+	color: rgb(136, 29, 64);
+	background-color: white;
+}
+
+.section_more_information_key_value {
+	clear: both;
+	margin-left: 10mm;
+	height: 6mm;
+	font-family: 'SourceSansPro';
+	font-size: 12pt;
+}
+
+.section_more_information_key_value img {
+	width: 5mm;
+	float: left;
+} 
+
+.section_more_information_key {
+	float: left;
+	padding-left: 2mm;
+	font-size: 10pt;
+	font-family: 'SourceSansPro';
+	font-size: 12pt;
+}
+
+.section_more_information_value {
+	float: left;
+	font-family: 'SourceSansPro';
+	font-size: 12pt;
+	padding-left: 2mm;
+	font-weight: bold;
+}
+
+.section_color_key_value {
+	clear: both;
+	padding-left: 7mm;
+	height: 6mm;
+}
+
+.section_color_key {
+	width: 6mm;
+	float: left;
+}
+
+.section_color_value {
+	font-weight: 400;
+	float: left;
+}
+
+.section_color_grid {
+	padding-left: 20mm;
+	padding-right: 20mm;
+}
+
+.row {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	width: 100%;
+}
+
+.column {
+	display: flex;
+	flex-direction: column;
+	flex-basis: 100%;
+	flex: 1;
+	text-align: center;
+	padding-bottom: 10px;
+}
+
+.ink_coverage_preview img {
+	max-width: 170mm;
+	max-height: 250mm;
+	padding-top: 20mm;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.separation_preview_single {
+	display: inline-block;
+	vertical-align: top;
+	width: 50%;
+	padding-top: 10mm;
+	text-align: center;
+}
+
+.separation_preview_single img {
+	max-height: 100mm;
+	max-width: 100%;
+}
+
+#section_hits {
+	font-family: 'SourceSansPro';
+	font-size: 12pt;
+}
+
+.colorpatch {
+	margin-top: 1.1mm;
+	margin-right: 3mm;
+	height: 3mm;
+	width: 3mm;
+	color: cyan;
+	border-radius: 50%;
+	float: left;
+}
+
+div#section_colors, div#section_more_information {
+	page-break-inside: avoid;
+}
