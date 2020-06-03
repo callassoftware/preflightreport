@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+	<title>Preflight Report</title>
+	
+	<!-- Style sheets -->
+	<link rel="stylesheet" href="callas_library/styles/clean-up.css"  type="text/css"/>
+	<link rel="stylesheet" href="callas_library/styles/fonts.css"  type="text/css"/>
+	<link rel="stylesheet" href="callas_library/styles/mixin.css"  type="text/css"/>
+	<link rel="stylesheet" href="styles/styles.css"  type="text/css"/>
+	
+	<!-- Javascripts -->
+	<script type="text/javascript" src="scripts/cals_params.js"></script>
+	<script type="text/javascript" src="callas_library/scripts/jquery-min.js"></script>
+	<script type="text/javascript" src="callas_library/scripts/cals-units.js"></script>
+	<script type="text/javascript" src="callas_library/scripts/cals-preflight-report.js"></script>
+	<script type="text/javascript" src="callas_library/scripts/cals-xml-report.js"></script>
+	<script type="text/javascript" src="scripts/preferences.js"></script>
+	<script type="text/javascript" src="scripts/script.js"></script>
+	
+</head>
+
+<body>
+	
+	<div id="page_general" class="page">
+		
+		<!-- Header with background image, title and logo -->
+		<div class="header">
+			<div class="header_title">
+				<p class="translatable">Preflight report</p>
+			</div>
+			<div class="header_logo">
+				<img src="img/logo.pdf">
+			</div>
+		</div>
+		
+		<!-- Summary with preview images and summary of preflight results -->
+		<div id="section_summary">
+			
+
+			<table id="section_summary_preview">
+
+				<tr id="section_summary_preview_header">
+					<td class="column1">
+						<p class="dimension horizontal">777 mm</p>
+						<img class ="arrow horizontal" src="img/arrow.pdf">
+					</td>
+					<td class="column2">
+						<p class="dimension horizontal">777 mm</p>
+						<img class ="arrow horizontal" src="img/arrow.pdf">
+					</td> 
+					<td class="column3">
+					</td>
+				</tr>
+
+				<tr id="section_summary_preview_images">
+					<td class="column1">
+						<img class="preview page1">
+					</td>
+					<td class="column2">
+						<img class="preview page2">
+					</td>
+					<td class="column3">
+						<div>
+							<p class="dimension vertical">666 mm</p>
+							<img class ="arrow vertical" src="img/arrow.pdf">
+						</div>
+					</td>
+				</tr>
+								    
+			</table>
+			<script>updatePreviewImages();</script>
+
+		</div>
+
+		<div id="section_summary_non_preview">
+			<div class="section_with_title">
+				<p class="title translatable"><span>callas pdfToolbox summary report for:</span></p>
+			</div>
+			<div class="row">
+
+				<div id="section_summary_text" class="column left">
+					<div class="section_summary_key_value">
+						<p class="section_summary_key translatable">Document name:</p>
+						<br>
+						<p class="section_summary_value params_document_name"></p>
+					</div>
+					<div class="section_summary_key_value">
+						<p class="section_summary_key translatable">Number of pages:</p>
+						<p class="section_summary_value params_number_of_pages"></p>
+					</div>
+					<div class="section_summary_key_value">
+						<p class="section_summary_key translatable">Trim size:</p>
+						<p class="section_summary_value params_summary_trim_size"></p>
+					</div>
+					<div class="section_summary_key_value">
+						<p class="section_summary_key translatable">Profile name:</p>
+						<p class="section_summary_value params_profile_name"></p>
+					</div>
+					<div class="section_summary_key_value">
+						<p class="section_summary_key translatable">Preflighted:</p>
+						<p class="section_summary_value params_preflighted_when_by"></p>
+					</div>
+					<div class="section_summary_key_value hide_elements">
+						<p class="section_summary_key translatable">Result:</p>
+						<p class="section_summary_value params_summary_result"></p>
+					</div>		
+				</div>
+				
+				<div id="section_summary_icons" class="column right">
+					<img id="section_summary_icons_success" src="img/result_success.pdf">
+					<img id="section_summary_icons_error" src="img/result_error.pdf">
+					<script>updateResultImages( "#section_summary_icons_success", "#section_summary_icons_error" );</script>				
+				</div>
+			</div>
+		</div>
+	
+		<!-- Section with all hit information -->
+		<div id="section_hits" class="section_with_title">
+			<p class="title translatable"><span>Preflight information</span></p>
+			<script>insertHitsAndFixups("#section_hits");</script>
+		</div>
+		
+		<!-- Section with additional document information -->
+		<div id="section_more_information" class="section_with_title">
+			<p class="title translatable"><span>More information</span></p>
+			
+			<div class="section_more_information_key_value">
+				<p class="bullet">&#xe900;</p>
+				<p class="section_more_information_key translatable">File size:</p>
+				<p class="section_more_information_value params_file_size"></p>
+			</div>
+			
+			<div class="section_more_information_key_value">
+				<p class="bullet">&#xe900;</p>
+				<p class="section_more_information_key translatable">PDF version:</p>
+				<p class="section_more_information_value params_pdf_version"></p>
+			</div>
+			
+			<div class="section_more_information_key_value">
+				<p class="bullet">&#xe900;</p>
+				<p class="section_more_information_key translatable">Standards:</p>
+				<p class="section_more_information_value params_standards"></p>
+			</div>
+			
+			<div class="section_more_information_key_value hide_elements">
+				<p class="bullet">&#xe900;</p>
+				<p class="section_more_information_key translatable">Document title:</p>
+				<p class="section_more_information_value params_document_title"></p>
+			</div>
+			
+			<div class="section_more_information_key_value">
+				<p class="bullet">&#xe900;</p>
+				<p class="section_more_information_key translatable">Creator:</p>
+				<p class="section_more_information_value params_creator"></p>
+			</div>
+			
+			<div class="section_more_information_key_value">
+				<p class="bullet">&#xe900;</p>
+				<p class="section_more_information_key translatable">Producer:</p>
+				<p class="section_more_information_value params_producer"></p>
+			</div>
+			
+			<div class="section_more_information_key_value hide_elements">
+				<p class="bullet">&#xe800;</p>
+				<p class="section_more_information_key translatable">Preflight information:</p>
+				<p class="section_more_information_value params_preflight_information"></p>
+			</div>
+			
+			<div class="section_more_information_key_value oi hide_elements">
+				<p class="bullet">&#xe800;</p>
+				<p class="section_more_information_key translatable">Output intent name:</p>
+				<p class="section_more_information_value" id="oi_name"></p>
+			</div>
+		</div>
+		
+		<!-- Section with document colors -->
+		<div id="section_colors" class="section_with_title">
+			<p class="title translatable"><span>Color information</span></p>
+			<script id="section_colors_details">insertColorInformation("#section_colors");</script>			
+		</div>
+		
+	</div>
+	
+	<div id="page_ink_coverage" class="page">
+		
+		<!-- Header with background image, title and logo -->
+		<div class="header">
+			<div class="header_title">
+				<p class="translatable"><span>Ink coverage</span></p>
+			</div>
+			<div class="header_logo">
+				<img src="img/logo.pdf">
+			</div>
+		</div>
+		
+		<div class="ink_coverage_preview">
+			<img>
+		</div>
+		<script>updateInkCoverageImage()</script>
+		
+	</div>
+	
+	<div id="page_separations" class="page">
+		
+		<!-- Header with background image, title and logo -->
+		<div class="header">
+			<div class="header_title">
+				<p class="translatable"><span>Separations</span></p>
+			</div>
+			<div class="header_logo">
+				<img src="img/logo.pdf">
+			</div>
+		</div>
+		
+		<div class="separation_preview"></div>
+		<script>insertSeparationImages()</script>
+		
+	</div>
+	
+	<!-- Update information throughout the DOM -->
+	<script>
+		completeFromParams();
+	</script>
+	
+	<!-- Translate information throughout the DOM -->
+	<script>
+		///translate();
+	</script>
+	
+</body>
+</html>
+
+
+
