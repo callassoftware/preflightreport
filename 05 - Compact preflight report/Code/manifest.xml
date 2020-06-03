@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <manifest xmlns:x="http://www.callassoftware.com/cchip/1/manifest/">
-	<x:displayname dict="DLG_BATCH_RepInfoPDF_long">A4 compact report - generic (Helena)</x:displayname>
+	<x:displayname>A4 compact report - generic (Helena)</x:displayname>
 	<x:comment>An A4 compact preflight report that is customizable</x:comment>
 	
 	<x:settings>
